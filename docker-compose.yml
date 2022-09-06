@@ -1,0 +1,27 @@
+version: "3.3"
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/app/
+    ports:
+      - 8000:8000
+    depends_on:
+      - rabbitmq
+
+  celery:
+    build: .
+    command: celery -A Api3Divi.celery worker -l info -P prefork
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - web
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
