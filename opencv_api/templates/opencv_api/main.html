@@ -1,13 +1,90 @@
-<!DOCTYPE html>
- <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <title>Main Page</title>
- </head>
- 
- <body>
-    This is main page
-    Hello world!!
- </body>
+{% load custom_tags %}
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="main_div">
+    <div><h1>Video processing service</h1></div>
+    <div class="form_div">
+        <form action="/processing/video/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Загрузить</button>
+        </form>
+    </div>
+    <div class="table_div">
+        {% if data %}
+            <table>
+                {% for item in data|dictsort:"id" %}
+                    <tr>
+                        {% for key,value in item.items %}
+                            <td>{{ key }}:{{ value }}</td>
+                        {% endfor %}
+                        {% if item|get_item:"status" == "waiting" or item|get_item:"status" == "processing" %}
+                            <td>
+                                <form action="/processing/video/{{ item|get_item:"id" }}/cancel" method="post" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <button type="submit">Остановить обработку</button>
+                                </form>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+    <div class="reload_page">
+        <p><a href="{% url 'main' %}">Обновить страницу</a></p>
+    </div>
+</div>
+
+
+</body>
+<style>
+    .main_div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .main_div .form_div form {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        order: 2;
+    }
+    .table_div{
+        order: 4;
+    }
+    .reload_page {
+        order: 3;
+    }
+    table {
+        min-width:750px;
+        border-collapse: collapse;
+        margin: 10px auto;
+
+    }
+
+    tr:nth-of-type(odd) {
+        background: #eee;
+    }
+
+    th {
+        background: #3498db;
+        color: white;
+        font-weight: bold;
+    }
+
+    td, th {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+        font-size: 18px;
+    }
+</style>
 </html>
