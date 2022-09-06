@@ -6,6 +6,8 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src/app/
+    environment:
+      - DEBUG=1
     ports:
       - 8000:8000
     depends_on:
@@ -16,6 +18,8 @@ services:
     command: celery -A Api3Divi.celery worker -l info -P prefork
     volumes:
       - .:/usr/src/app
+    environment:
+      - DEBUG=1
     depends_on:
       - web
       - rabbitmq
